@@ -4,7 +4,7 @@ A program that can automatically combine and scale maparts made out of several m
 
 ## Usage
 
-1. Export maps from Minecraft into a supported format, `png` or `jpg`.
+1. Export maps from Minecraft as pngs
 2. Run the `stitch` command on the directory to stitch the exported images together.
 
 ```sh
