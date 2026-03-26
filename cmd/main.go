@@ -38,7 +38,11 @@ func main() {
 			return
 		}
 	case "scale":
-		fmt.Println("scale stuff here")
+		err := internal.ScaleImage(input, outputPath, scale)
+		if err != nil {
+			fmt.Printf("Failed to scale: %s.\n", err)
+			return
+		}
 	default:
 		fmt.Println("Unknown command.")
 		help()

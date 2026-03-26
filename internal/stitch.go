@@ -16,19 +16,19 @@ const singleMapDimension = 128
 
 func StitchMapart(inputDir string, outputPath string, scale int) error {
 	fmt.Printf("Loading map images...\n")
-	rows, cols, imgGrid, err := loadImages(inputDir)
+	rows, cols, imgGrid, err := loadMapImages(inputDir)
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf("Loaded map images, map image size is %dx%d\n", cols, rows)
 	fmt.Printf("Stitching map images...\n")
-	img := stitchImages(imgGrid, rows, cols)
+	img := stitchMapImages(imgGrid, rows, cols)
 	fmt.Printf("Stitched map images, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 
 	if scale != 1 {
 		fmt.Printf("Scaling image %dx\n", scale)
-		img = resize(img, scale)
+		img = scaleImage(img, scale)
 		fmt.Printf("Scaled image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 	}
 
@@ -61,7 +61,7 @@ func extractCoordinate(s string) (int, int, bool) {
 	return row, col, true
 }
 
-func stitchImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
+func stitchMapImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{cols * singleMapDimension, rows * singleMapDimension}})
 
 	xOffset := 0
@@ -89,23 +89,7 @@ func stitchImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 	return img
 }
 
-func resize(img image.Image, scale int) image.Image {
-	rows := img.Bounds().Max.X * scale
-	cols := img.Bounds().Max.Y * scale
-
-	resized := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{cols, rows}})
-
-	for x := range rows {
-		for y := range cols {
-			xp := x / scale
-			yp := y / scale
-			resized.Set(x, y, img.At(xp, yp))
-		}
-	}
-	return resized
-}
-
-func loadImages(inputDir string) (int, int, [][]image.Image, error) {
+func loadMapImages(inputDir string) (int, int, [][]image.Image, error) {
 	entries, err := os.ReadDir(inputDir)
 	if err != nil {
 		return 0, 0, nil, err
