@@ -34,7 +34,7 @@ func main() {
 	case "stitch":
 		err := internal.StitchMapart(input, outputPath, scale)
 		if err != nil {
-			fmt.Printf("Failed to stitch maps: %s\n", err)
+			fmt.Printf("Failed to stitch maps: %s.\n", err)
 			return
 		}
 	case "scale":

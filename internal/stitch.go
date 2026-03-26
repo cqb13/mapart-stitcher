@@ -149,7 +149,7 @@ func loadImages(inputDir string) (int, int, [][]image.Image, error) {
 	}
 
 	if rows == 0 || cols == 0 {
-		return 0, 0, nil, fmt.Errorf("No valid map images founds.")
+		return 0, 0, nil, fmt.Errorf("No valid map images found")
 	}
 
 	return rows, cols, imgGrid, nil
