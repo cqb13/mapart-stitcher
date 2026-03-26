@@ -26,6 +26,12 @@ func StitchMapart(inputDir string, outputPath string, scale int) error {
 	img := stitchImages(imgGrid, rows, cols)
 	fmt.Printf("Stitched map images, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 
+	if scale != 1 {
+		fmt.Printf("Scaling image %dx\n", scale)
+		img = resize(img, scale)
+		fmt.Printf("Scaled image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+	}
+
 	fmt.Printf("Saving image to %s...\n", outputPath)
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
@@ -81,6 +87,22 @@ func stitchImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 	}
 
 	return img
+}
+
+func resize(img image.Image, scale int) image.Image {
+	rows := img.Bounds().Max.X * scale
+	cols := img.Bounds().Max.Y * scale
+
+	resized := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{cols, rows}})
+
+	for x := range rows {
+		for y := range cols {
+			xp := x / scale
+			yp := y / scale
+			resized.Set(x, y, img.At(xp, yp))
+		}
+	}
+	return resized
 }
 
 func loadImages(inputDir string) (int, int, [][]image.Image, error) {
