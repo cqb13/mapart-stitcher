@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/png"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -23,6 +24,31 @@ func ScaleImage(inputPath string, outputPath string, scale int) error {
 		}
 
 		return nil
+	}
+
+	err = os.Mkdir(outputPath, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("Failed to create output directory: %w", err)
+	}
+
+	entries, err := os.ReadDir(inputPath)
+	if err != nil {
+		return fmt.Errorf("Failed to read input directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".png") {
+			continue
+		}
+
+		imgPath := filepath.Join(inputPath, entry.Name())
+		scaledImgPath := filepath.Join(outputPath, entry.Name())
+
+		err = loadScaleSave(imgPath, scaledImgPath, scale)
+		if err != nil {
+			fmt.Printf("Failed to scale %s: %s, Skipping...\n", imgPath, err)
+			continue
+		}
 	}
 
 	return nil

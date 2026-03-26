@@ -92,7 +92,7 @@ func stitchMapImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 func loadMapImages(inputDir string) (int, int, [][]image.Image, error) {
 	entries, err := os.ReadDir(inputDir)
 	if err != nil {
-		return 0, 0, nil, err
+		return 0, 0, nil, fmt.Errorf("Failed to read input directory: %w", err)
 	}
 
 	imgGrid := [][]image.Image{}
