@@ -22,18 +22,18 @@ _Note: Exported maps must be 128x128 in order to be stitched together_
 
 ## Export Guide
 
-Maps must be exported with the following suffix `(row-col)`
+Maps must be exported with the following suffix `-row-col`
 
-Ex: `cool-map-(0-0).png`
+Ex: `cool-map-0-0.png`
 
-The top left map must always be (0-0).
+The top left map must always be 0-0.
 
 For example a 2x2 map should be exported like this:
 
 ```
-╔═════════╦═════════╗
-║map-(0-0)║map-(0-1)║
-╠═════════╬═════════╣
-║map-(1-0)║map-(1-1)║
-╚═════════╩═════════╝
+╔═══════╦═══════╗
+║map-0-0║map-0-1║
+╠═══════╬═══════╣
+║map-1-0║map-1-1║
+╚═══════╩═══════╝
 ```
