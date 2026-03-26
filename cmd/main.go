@@ -25,7 +25,7 @@ func main() {
 	var outputPath string
 	var scale int
 
-	fs.StringVar(&outputPath, "o", "map", "output image")
+	fs.StringVar(&outputPath, "o", "map.png", "output image")
 	fs.IntVar(&scale, "s", 1, "scale amount")
 
 	fs.Parse(args[2:])

@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -12,6 +13,33 @@ import (
 )
 
 const singleMapDimension = 128
+
+func StitchMapart(inputDir string, outputPath string, scale int) error {
+	fmt.Printf("Loading map images...\n")
+	rows, cols, imgGrid, err := loadImages(inputDir)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Loaded map images, map image size is %dx%d\n", cols, rows)
+	fmt.Printf("Stitching map images...\n")
+	img := stitchImages(imgGrid, rows, cols)
+	fmt.Printf("Stitched map images, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+
+	fmt.Printf("Saving image to %s...\n", outputPath)
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)
+	}
+
+	err = png.Encode(outputFile, img)
+	if err != nil {
+		return fmt.Errorf("Failed to save image to %s: %w", outputPath, err)
+	}
+	fmt.Printf("Saved stitched image to %s\n", outputPath)
+
+	return nil
+}
 
 func extractCoordinate(s string) (int, int, bool) {
 	re := regexp.MustCompile(`-(\d+)-(\d+)\.png$`)
@@ -27,21 +55,35 @@ func extractCoordinate(s string) (int, int, bool) {
 	return row, col, true
 }
 
-func StitchMapart(inputDir string, outputPath string, scale int) error {
-	fmt.Printf("Loading maps...\n")
-	rows, cols, imgGrid, err := loadMaps(inputDir)
-	if err != nil {
-		return err
+func stitchImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{cols * singleMapDimension, rows * singleMapDimension}})
+
+	xOffset := 0
+	yOffset := 0
+
+	for _, row := range imgGrid {
+		xOffset = 0
+		for _, mapImage := range row {
+			// copy single map over
+			for y := range singleMapDimension {
+				for x := range singleMapDimension {
+					if mapImage == nil {
+						img.Set(xOffset+x, yOffset+y, color.Transparent)
+						continue
+					}
+
+					img.Set(xOffset+x, yOffset+y, mapImage.At(x, y))
+				}
+			}
+			xOffset += singleMapDimension
+		}
+		yOffset += singleMapDimension
 	}
 
-	fmt.Printf("Loaded maps, final map size is %dx%d\n", cols, rows)
-
-	_ = imgGrid
-
-	return nil
+	return img
 }
 
-func loadMaps(inputDir string) (int, int, [][]image.Image, error) {
+func loadImages(inputDir string) (int, int, [][]image.Image, error) {
 	entries, err := os.ReadDir(inputDir)
 	if err != nil {
 		return 0, 0, nil, err
