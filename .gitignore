@@ -3,5 +3,4 @@ go.work
 go.work.sum
 .env
 build
-testdata
 .DS_Store
