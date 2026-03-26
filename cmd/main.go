@@ -4,32 +4,39 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/cqb13/mapart-stitcher/internal"
 )
 
 func main() {
 	args := os.Args[1:]
 
-	if len(args) == 0 {
+	if len(args) < 2 {
 		fmt.Println("Not enough arguments.")
 		help()
 		return
 	}
 
 	cmd := args[0]
+	input := args[1]
 
 	fs := flag.NewFlagSet(cmd, flag.ExitOnError)
 
-	var outputFlag string
-	var scaleFlag int
+	var outputPath string
+	var scale int
 
-	fs.StringVar(&outputFlag, "o", "", "output image")
-	fs.IntVar(&scaleFlag, "s", 1, "scale amount")
+	fs.StringVar(&outputPath, "o", "map", "output image")
+	fs.IntVar(&scale, "s", 1, "scale amount")
 
-	fs.Parse(args[1:])
+	fs.Parse(args[2:])
 
 	switch cmd {
 	case "stitch":
-		fmt.Println("stitch stuff here")
+		err := internal.StitchMapart(input, outputPath, scale)
+		if err != nil {
+			fmt.Printf("Failed to stitch maps: %s\n", err)
+			return
+		}
 	case "scale":
 		fmt.Println("scale stuff here")
 	default:
