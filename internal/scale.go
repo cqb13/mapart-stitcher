@@ -104,13 +104,13 @@ func loadImage(imgPath string) (image.Image, error) {
 }
 
 func scaleImage(img image.Image, scale int) image.Image {
-	rows := img.Bounds().Max.X * scale
-	cols := img.Bounds().Max.Y * scale
+	rows := img.Bounds().Max.Y * scale
+	cols := img.Bounds().Max.X * scale
 
 	scaledImg := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{cols, rows}})
 
-	for x := range rows {
-		for y := range cols {
+	for y := range rows {
+		for x := range cols {
 			xp := x / scale
 			yp := y / scale
 			scaledImg.Set(x, y, img.At(xp, yp))
