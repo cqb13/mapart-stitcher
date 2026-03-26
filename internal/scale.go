@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/png"
 	"os"
+	"strings"
 )
 
 func ScaleImage(inputPath string, outputPath string, scale int) error {
@@ -20,19 +21,34 @@ func ScaleImage(inputPath string, outputPath string, scale int) error {
 		if err != nil {
 			return err
 		}
+
+		return nil
 	}
 
 	return nil
 }
 
 func loadScaleSave(imgPath string, outputPath string, scale int) error {
+	if !strings.HasSuffix(imgPath, ".png") {
+		return fmt.Errorf("Input path must lead to a png")
+	}
+
+	if !strings.HasSuffix(outputPath, ".png") {
+		return fmt.Errorf("Output path must lead to a png")
+	}
+
+	fmt.Printf("Loading image %s...\n", imgPath)
 	img, err := loadImage(imgPath)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Loaded image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 
+	fmt.Printf("Scaling image %dx\n", scale)
 	scaledImg := scaleImage(img, scale)
+	fmt.Printf("Scaled image, image size is %dx%d\n", scaledImg.Bounds().Max.X, scaledImg.Bounds().Max.Y)
 
+	fmt.Printf("Saving image to %s...\n", outputPath)
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)
@@ -42,6 +58,7 @@ func loadScaleSave(imgPath string, outputPath string, scale int) error {
 	if err != nil {
 		return fmt.Errorf("Failed to save image to %s: %w", outputPath, err)
 	}
+	fmt.Printf("Saved scaled image to %s\n", outputPath)
 
 	return nil
 }
