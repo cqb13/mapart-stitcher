@@ -32,6 +32,10 @@ func StitchMapart(inputDir string, outputPath string, scale int) error {
 		fmt.Printf("Scaled image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 	}
 
+	if !strings.HasSuffix(outputPath, ".png") {
+		outputPath += ".png"
+	}
+
 	fmt.Printf("Saving image to %s...\n", outputPath)
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
