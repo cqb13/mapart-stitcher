@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func ScaleImage(inputPath string, outputPath string, scale int) error {
+func ScaleImage(inputPath string, outputPath string, scale int, log bool) error {
 	fileInfo, err := os.Stat(inputPath)
 	if err != nil {
 		return err
@@ -18,7 +18,7 @@ func ScaleImage(inputPath string, outputPath string, scale int) error {
 	massScale := fileInfo.IsDir()
 
 	if !massScale {
-		err := loadScaleSave(inputPath, outputPath, scale)
+		err := loadScaleSave(inputPath, outputPath, scale, log)
 		if err != nil {
 			return err
 		}
@@ -44,9 +44,11 @@ func ScaleImage(inputPath string, outputPath string, scale int) error {
 		imgPath := filepath.Join(inputPath, entry.Name())
 		scaledImgPath := filepath.Join(outputPath, entry.Name())
 
-		err = loadScaleSave(imgPath, scaledImgPath, scale)
+		err = loadScaleSave(imgPath, scaledImgPath, scale, log)
 		if err != nil {
-			fmt.Printf("Failed to scale %s: %s, Skipping...\n", imgPath, err)
+			if log {
+				fmt.Printf("Failed to scale %s: %s, Skipping...\n", imgPath, err)
+			}
 			continue
 		}
 	}
@@ -54,7 +56,7 @@ func ScaleImage(inputPath string, outputPath string, scale int) error {
 	return nil
 }
 
-func loadScaleSave(imgPath string, outputPath string, scale int) error {
+func loadScaleSave(imgPath string, outputPath string, scale int, log bool) error {
 	if !strings.HasSuffix(imgPath, ".png") {
 		return fmt.Errorf("Input path must lead to a png")
 	}
@@ -63,18 +65,26 @@ func loadScaleSave(imgPath string, outputPath string, scale int) error {
 		return fmt.Errorf("Output path must lead to a png")
 	}
 
-	fmt.Printf("Loading image %s...\n", imgPath)
+	if log {
+		fmt.Printf("Loading image %s...\n", imgPath)
+	}
 	img, err := loadImage(imgPath)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Loaded image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
 
-	fmt.Printf("Scaling image %dx\n", scale)
+	if log {
+		fmt.Printf("Loaded image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+		fmt.Printf("Scaling image %dx\n", scale)
+	}
+
 	scaledImg := scaleImage(img, scale)
-	fmt.Printf("Scaled image, image size is %dx%d\n", scaledImg.Bounds().Max.X, scaledImg.Bounds().Max.Y)
 
-	fmt.Printf("Saving image to %s...\n", outputPath)
+	if log {
+		fmt.Printf("Scaled image, image size is %dx%d\n", scaledImg.Bounds().Max.X, scaledImg.Bounds().Max.Y)
+		fmt.Printf("Saving image to %s...\n", outputPath)
+	}
+
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)

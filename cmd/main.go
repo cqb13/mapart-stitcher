@@ -24,21 +24,23 @@ func main() {
 
 	var outputPath string
 	var scale int
+	var log bool
 
 	fs.StringVar(&outputPath, "o", "map.png", "output image")
 	fs.IntVar(&scale, "s", 1, "scale amount")
+	fs.BoolVar(&log, "l", false, "print logs")
 
 	fs.Parse(args[2:])
 
 	switch cmd {
 	case "stitch":
-		err := internal.StitchMapart(input, outputPath, scale)
+		err := internal.StitchMapart(input, outputPath, scale, log)
 		if err != nil {
 			fmt.Printf("Failed to stitch maps: %s.\n", err)
 			return
 		}
 	case "scale":
-		err := internal.ScaleImage(input, outputPath, scale)
+		err := internal.ScaleImage(input, outputPath, scale, log)
 		if err != nil {
 			fmt.Printf("Failed to scale: %s.\n", err)
 			return
@@ -57,4 +59,5 @@ func help() {
 	fmt.Println("Flags:")
 	fmt.Println("\t-o output-path")
 	fmt.Println("\t-s scale")
+	fmt.Println("\t-l log")
 }

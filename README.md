@@ -15,6 +15,7 @@ mas scale ./cool-stitched-map.png
 FLAGS:
 -o output-path.png
 -s scale
+-l log
 
 ```
 

@@ -14,29 +14,46 @@ import (
 
 const singleMapDimension = 128
 
-func StitchMapart(inputDir string, outputPath string, scale int) error {
-	fmt.Printf("Loading map images...\n")
-	rows, cols, imgGrid, err := loadMapImages(inputDir)
+func StitchMapart(inputDir string, outputPath string, scale int, log bool) error {
+	if log {
+		fmt.Printf("Loading map images...\n")
+	}
+	rows, cols, imgGrid, err := loadMapImages(inputDir, log)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Loaded map images, map image size is %dx%d\n", cols, rows)
-	fmt.Printf("Stitching map images...\n")
+	if log {
+		fmt.Printf("Loaded map images, map image size is %dx%d\n", cols, rows)
+		fmt.Printf("Stitching map images...\n")
+
+	}
 	img := stitchMapImages(imgGrid, rows, cols)
-	fmt.Printf("Stitched map images, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+	if log {
+		fmt.Printf("Stitched map images, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+	}
 
 	if scale != 1 {
-		fmt.Printf("Scaling image %dx\n", scale)
+		if log {
+			fmt.Printf("Scaling image %dx\n", scale)
+		}
 		img = scaleImage(img, scale)
-		fmt.Printf("Scaled image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+		if log {
+			fmt.Printf("Scaled image, image size is %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+		}
 	}
 
 	if !strings.HasSuffix(outputPath, ".png") {
 		outputPath += ".png"
+		if log {
+			fmt.Println("Automatically adding .png file extension to output path")
+		}
 	}
 
-	fmt.Printf("Saving image to %s...\n", outputPath)
+	if log {
+		fmt.Printf("Saving image to %s...\n", outputPath)
+	}
+
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)
@@ -93,7 +110,7 @@ func stitchMapImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 	return img
 }
 
-func loadMapImages(inputDir string) (int, int, [][]image.Image, error) {
+func loadMapImages(inputDir string, log bool) (int, int, [][]image.Image, error) {
 	entries, err := os.ReadDir(inputDir)
 	if err != nil {
 		return 0, 0, nil, fmt.Errorf("Failed to read input directory: %w", err)
@@ -155,7 +172,9 @@ func loadMapImages(inputDir string) (int, int, [][]image.Image, error) {
 
 		imgGrid[row][col] = img
 
-		fmt.Printf("%s\n", entry.Name())
+		if log {
+			fmt.Printf("%s\n", entry.Name())
+		}
 	}
 
 	if rows == 0 || cols == 0 {
