@@ -69,4 +69,5 @@ func help() {
 	fmt.Println("\t-o output-path")
 	fmt.Println("\t-s scale")
 	fmt.Println("\t-l log")
+	fmt.Println("\t-d gif-frame-delay")
 }
