@@ -89,6 +89,7 @@ func loadScaleSave(imgPath string, outputPath string, scale int, log bool) error
 	if err != nil {
 		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)
 	}
+	defer outputFile.Close()
 
 	err = png.Encode(outputFile, scaledImg)
 	if err != nil {
@@ -104,6 +105,7 @@ func loadImage(imgPath string) (image.Image, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open %s: %s", imgPath, err)
 	}
+	defer file.Close()
 
 	img, err := png.Decode(file)
 	if err != nil {

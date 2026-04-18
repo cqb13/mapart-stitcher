@@ -12,11 +12,13 @@ mas stitch ./cool-map/
 
 mas scale ./cool-stitched-map.png
 
+mas animate ./map-progress/
+
 FLAGS:
 -o output-path.png
 -s scale
 -l log
-
+-d gif-frame-delay
 ```
 
 _Note: Exported maps must be 128x128 in order to be stitched together_

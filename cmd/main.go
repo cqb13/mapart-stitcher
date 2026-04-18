@@ -25,10 +25,12 @@ func main() {
 	var outputPath string
 	var scale int
 	var log bool
+	var gifFrameDelay int
 
 	fs.StringVar(&outputPath, "o", "map.png", "output image")
 	fs.IntVar(&scale, "s", 1, "scale amount")
 	fs.BoolVar(&log, "l", false, "print logs")
+	fs.IntVar(&gifFrameDelay, "d", 50, "gif frame delay")
 
 	fs.Parse(args[2:])
 
@@ -45,6 +47,12 @@ func main() {
 			fmt.Printf("Failed to scale: %s.\n", err)
 			return
 		}
+	case "animate":
+		err := internal.AnimateMapart(input, outputPath, scale, gifFrameDelay, log)
+		if err != nil {
+			fmt.Printf("Failed to animate: %s.\n", err)
+			return
+		}
 	default:
 		fmt.Println("Unknown command.")
 		help()
@@ -56,6 +64,7 @@ func help() {
 	fmt.Println("Usage:")
 	fmt.Println("\tmas stitch map-directory/")
 	fmt.Println("\tmas scale cool-map.png")
+	fmt.Println("\tmas animate map-directory/")
 	fmt.Println("Flags:")
 	fmt.Println("\t-o output-path")
 	fmt.Println("\t-s scale")

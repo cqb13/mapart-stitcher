@@ -18,7 +18,7 @@ func StitchMapart(inputDir string, outputPath string, scale int, log bool) error
 	if log {
 		fmt.Printf("Loading map images...\n")
 	}
-	rows, cols, imgGrid, err := loadMapImages(inputDir, log)
+	rows, cols, imgGrid, err := loadLinkedMap(inputDir, log)
 	if err != nil {
 		return err
 	}
@@ -58,6 +58,7 @@ func StitchMapart(inputDir string, outputPath string, scale int, log bool) error
 	if err != nil {
 		return fmt.Errorf("Failed to create output file, %s: %w", outputPath, err)
 	}
+	defer outputFile.Close()
 
 	err = png.Encode(outputFile, img)
 	if err != nil {
@@ -110,7 +111,7 @@ func stitchMapImages(imgGrid [][]image.Image, rows int, cols int) image.Image {
 	return img
 }
 
-func loadMapImages(inputDir string, log bool) (int, int, [][]image.Image, error) {
+func loadLinkedMap(inputDir string, log bool) (int, int, [][]image.Image, error) {
 	entries, err := os.ReadDir(inputDir)
 	if err != nil {
 		return 0, 0, nil, fmt.Errorf("Failed to read input directory: %w", err)
@@ -139,6 +140,7 @@ func loadMapImages(inputDir string, log bool) (int, int, [][]image.Image, error)
 			fmt.Printf("Failed to open %s: %s, Skipping...\n", imgPath, err)
 			continue
 		}
+		defer file.Close()
 
 		img, err := png.Decode(file)
 		if err != nil {
